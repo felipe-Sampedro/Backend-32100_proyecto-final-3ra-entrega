@@ -10,7 +10,7 @@ class MongoContainer {
   }
 
   static async connect() {
-    await mongoose.connect(dbConfig.mongodb.uri);
+    await mongoose.connect(dbConfig.mongodb.connectTo("PF_3ra_Entrega"));
   }
 
   static async disconnect() {
