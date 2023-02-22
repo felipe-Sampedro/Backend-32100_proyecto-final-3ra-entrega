@@ -4,7 +4,6 @@ const { successResponse } = require('../utils/api.utils');
 
 const productsDao= new ProductsDao()
 
-
 class ProductsControllers {
   
     getProducts = async (req, res,next) => { 

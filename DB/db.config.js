@@ -1,19 +1,8 @@
-const envConfig=require('../config')
-const firebaseConfig = require('./firebase/firebase.config.json')
-const prodsJson = require('./data/products.json');
-const cartsJson = require('./data/cart.json');
+const envConfig = require('../config');
 
-
-module.exports={
-    file:{
-        products: prodsJson,
-        carts: cartsJson
-    },
-    mongodb:{
-        uri: `mongodb+srv://coderhouse:coder123house456@cluster0.zhv02a9.mongodb.net/?retryWrites=true&w=majority`
-    
-    },
-    firebase:{
-        credentials: firebaseConfig
-    }
+module.exports = { 
+  mongodb: {
+    connectTo: (database) => `mongodb+srv://coderhouse:${envConfig.DB_PASSWORD}@cluster0.zhv02a9.mongodb.net/${database}?retryWrites=true&w=majority`
+  }  
+  // Change here for your mongo atlas account's URI
 }
