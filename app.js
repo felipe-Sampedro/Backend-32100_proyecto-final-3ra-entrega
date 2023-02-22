@@ -1,20 +1,47 @@
-const express = require('express');
-const errorMiddleware = require('./middlewares/error.middleware');
-const { connect } = require('./router/app.routes');
+const express = require("express");
+const errorMiddleware = require("./middlewares/error.middleware");
+const apiRoutes = require("./routers/app.routes");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const env = require("./env.config");
+const dbConfig = require("./DB/db.config");
+const passport = require("./middlewares/passport");
+const { engine } = require("express-handlebars");
+const path = require("path");
+
 const app = express();
 
-const apiRouetes = require('./router/app.routes')
-
-//Middlewares
 app.use(express.json());
-app.use(express.urlencoded({extended:true}))
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("./views/layouts"));
 
-//Routes
-app.use('/api',apiRouetes)
-app.use('*', (req, res)=>{
-    res.status(404).send({error:-2, descripcion:`ruta ${req.baseUrl} metodo ${req.method} no implementada`})
-});
+app.use(
+  session({
+    name: "coder-session",
+    secret: env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: dbConfig.mongodb.connectTo("PF_3ra_Entrega"),
+    }),
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.use(errorMiddleware)
+app.engine(
+  "hbs",
+  engine({
+    extname: "hbs",
+    defaultLayout: "index.hbs",
+    layoutsDir: path.resolve(__dirname, "./views/layouts"),
+    partialsDir: path.resolve(__dirname, "./views/partials"),
+  })
+);
+app.set("views", "./views/layouts");
+app.set("view engine", "hbs");
 
-module.exports = app
+app.use("/api", apiRoutes);
+app.use(errorMiddleware);
+
+module.exports = app;
